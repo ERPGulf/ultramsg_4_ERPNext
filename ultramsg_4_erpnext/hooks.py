@@ -4,6 +4,7 @@ app_publisher = "ERPGulf"
 app_description = "ERPNext app for sending whatsapp messages through UltraMsg"
 app_email = "support@ERPGulf.com"
 app_license = "MIT"
+#Update to push
 # required_apps = []
 
 # Includes in <head>
