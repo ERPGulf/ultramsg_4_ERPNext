@@ -1,0 +1,66 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-09-18 07:54:11.947398",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "message",
+  "url",
+  "token",
+  "from",
+  "to"
+ ],
+ "fields": [
+  {
+   "fieldname": "message",
+   "fieldtype": "Data",
+   "label": "message"
+  },
+  {
+   "fieldname": "url",
+   "fieldtype": "Data",
+   "label": "url"
+  },
+  {
+   "fieldname": "token",
+   "fieldtype": "Data",
+   "label": "token"
+  },
+  {
+   "fieldname": "from",
+   "fieldtype": "Phone",
+   "label": "from"
+  },
+  {
+   "fieldname": "to",
+   "fieldtype": "Phone",
+   "label": "to",
+   "options": "phone"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2023-09-19 15:42:17.846852",
+ "modified_by": "Administrator",
+ "module": "Ultramsg 4 Erpnext",
+ "name": "whatsapp message",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

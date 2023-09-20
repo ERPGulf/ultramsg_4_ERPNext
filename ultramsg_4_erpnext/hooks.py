@@ -113,6 +113,12 @@ app_license = "MIT"
 # override_doctype_class = {
 #	"ToDo": "custom_app.overrides.CustomToDo"
 # }
+doctype_js = {
+	"Notification" : "public/js/notification.js"
+}
+override_doctype_class = {
+	"Notification": "ultramsg_4_erpnext.overrides.notification.ERPGulfNotification"
+ }
 
 # Document Events
 # ---------------
