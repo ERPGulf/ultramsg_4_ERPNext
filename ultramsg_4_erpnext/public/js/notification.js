@@ -185,7 +185,7 @@ frappe.ui.form.on("Notification", {
 		}
 	},
 	channel: function (frm) {
-		frm.toggle_reqd("recipients", frm.doc.channel == "Email");
+		frm.toggle_reqd("recipients", frm.doc.channel == "Email"|| frm.doc.channel == "Whatsapp message");
 		frappe.notification.setup_fieldname_select(frm);
 		frappe.notification.setup_example_message(frm);
 		if (frm.doc.channel === "SMS" && frm.doc.__islocal) {
