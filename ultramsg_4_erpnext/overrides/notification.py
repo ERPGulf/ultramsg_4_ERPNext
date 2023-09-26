@@ -3,6 +3,8 @@ from frappe import _
 from frappe.email.doctype.notification.notification import Notification, get_context, json
 import requests
 import json
+import io
+import base64
 
 class ERPGulfNotification(Notification):
  def send(self, doc):
@@ -13,35 +15,28 @@ class ERPGulfNotification(Notification):
        context["comments"] = json.loads(doc.get("_comments"))
       if self.is_standard:
             self.load_standard_properties(context)
-                      
       try:
-           
             if self.channel == "whatsapp message":
                 token = frappe.get_doc('whatsapp message').get('token')
-                recipient = frappe.get_doc('whatsapp message').get('to')
-                # message =self.message 
-                print=self.print_format
-                # frappe.msgprint(print)
+                recipient = frappe.get_doc('whatsapp message').get('to')     
+                file = frappe.get_print("Print Format", "customer form", as_pdf=True)
+                pdf_bytes = io.BytesIO(file)
+                pdf_base64 = base64.b64encode(pdf_bytes.getvalue()).decode()
+                in_memory_url = f"data:application/pdf;base64,{pdf_base64}"
                 url =  frappe.get_doc('whatsapp message').get('url')
-                frappe.msgprint("line26")
-                self.send_ultra_whatsapp_msg(token,recipient,print,url,context)
-                frappe.msgprint("line28")
-                # self.whatsapp_message(doc, context)
+                self.send_ultra_whatsapp_msg(token,recipient,in_memory_url,url)
       except:
-            frappe.log_error(title='Failed to send notification', message=frappe.get_traceback())
-            
+            frappe.log_error(title='Failed to send notification', message=frappe.get_traceback())  
       super(ERPGulfNotification, self).send(doc)
                        
- def send_ultra_whatsapp_msg(self,token,recipient,print,url,context):
-    frappe.msgprint("line38")
+ def send_ultra_whatsapp_msg(self,token,recipient,in_memory_url,url,):
     url=url
-    # message1=frappe.render_template(self.message, context) 
-    print1= frappe.render_template(self.print_format,context)
-    frappe.msgprint(print1)  
     payload = {
         'token': token,
         'to': recipient,
-        'body': print1,
+        "filename": "customer",
+        "document": in_memory_url,
+        "caption": " attached file"
     }
     headers = {'content-type': 'application/x-www-form-urlencoded'} 
     try:
