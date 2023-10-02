@@ -37,17 +37,22 @@ frappe.notification = {
 			});
 
 			// set value changed options
-			frm.set_df_property("value_changed", "options", [""].concat(options));
-			frm.set_df_property("set_property_after_alert", "options", [""].concat(options));
+			frm.set_df_property("value_changed",
+			                "options", 
+			                [""].concat(options));
+			frm.set_df_property("set_property_after_alert", 
+			                 "options",  
+							 [""].concat(options));
 
 			// set date changed options
-			frm.set_df_property("date_changed", "options", get_date_change_options());
+			frm.set_df_property("date_changed",
+			                   "options",
+							    get_date_change_options());
 			
 			
 
 			let receiver_fields = [];
-			if (frm.doc.channel === "Email") {
-			}else if (frm.doc.channel === "Whatsapp message") {
+			if (frm.doc.channel === "Email")  {
 				receiver_fields = $.map(fields, function (d) {
 					// Add User and Email fields from child into select dropdown
 					if (d.fieldtype == "Table") {
