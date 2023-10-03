@@ -7,8 +7,8 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "url",
   "message_url",
+  "url",
   "token",
   "from",
   "to"
@@ -27,12 +27,12 @@
   {
    "fieldname": "from",
    "fieldtype": "Phone",
-   "label": "from"
+   "label": "From Number ( for testing )"
   },
   {
    "fieldname": "to",
    "fieldtype": "Phone",
-   "label": "to",
+   "label": "To Number ( for testing )",
    "options": "phone"
   },
   {
@@ -44,7 +44,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-10-03 11:06:50.918993",
+ "modified": "2023-10-03 15:56:08.324946",
  "modified_by": "Administrator",
  "module": "Ultramsg 4 Erpnext",
  "name": "whatsapp message",

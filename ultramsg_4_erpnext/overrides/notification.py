@@ -26,12 +26,12 @@ class ERPGulfNotification(Notification):
                 document_url= frappe.get_doc('whatsapp message').get('url') 
                 message_url =  frappe.get_doc('whatsapp message').get('message_url') 
                 msg=self.message
-                self.send_ultra_whatsapp_msg(token,in_memory_url,msg,message_url,document_url,context,doc)
+                self.send_ultra_whatsapp_msg(token,in_memory_url,msg,document_url,message_url,docname,context,doc)
       except:
             frappe.log_error(title='Failed to send notification', message=frappe.get_traceback())  
       super(ERPGulfNotification, self).send(doc)
                        
- def send_ultra_whatsapp_msg(self,token,in_memory_url,msg,document_url,message_url,context,doc):
+ def send_ultra_whatsapp_msg(self,token,in_memory_url,msg,document_url,message_url,docname,context,doc):
     msg1 = frappe.render_template(msg, context)
     recipients = self.get_receiver_list(doc, context)
     receiverNumbers = []
@@ -43,7 +43,7 @@ class ERPGulfNotification(Notification):
         payload = {
         'token': token,
         'to':number,
-        "filename": "file",
+        "filename": docname,
         "document": in_memory_url,
         "caption": msg1,
          }

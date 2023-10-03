@@ -8,19 +8,19 @@ import frappe
 from frappe.model.document import Document
 class whatsappmessage(Document):  
  @frappe.whitelist()
- def msg(self,token, recipient,message_url,url):
-    url=url
-    message_url=message_url
-    payload = {
+ def msg(self,token, recipient,message_url,):
+#    message_url=message_url
+   payload = {
         'token': token,
         'to': recipient,
-        'body':None,
-    }
+        'body':"This message is for testing",
+       }
     
-    headers = {'content-type': 'application/x-www-form-urlencoded'}
+   headers = {'content-type': 'application/x-www-form-urlencoded'}
 
-    try:
-        response = requests.post(url, data=payload, headers=headers)
-        return response.text
-    except Exception as e:
-        return e
+   try:
+           response = requests.post(message_url, data=payload, headers=headers)
+           return response.text
+   except Exception as e:
+          return e
+   

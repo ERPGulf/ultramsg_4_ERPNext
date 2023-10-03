@@ -15,10 +15,9 @@ frappe.ui.form.on("whatsapp message", {
 			token: frm.doc.token,
 			recipient :frm.doc.to,
 			message_url:frm.doc.message_url,
-            url:frm.doc.url
+        
 				}).then(r => {
-			
-				frappe.msgprint("success" ); 	
+			frappe.msgprint(r.message);; 	
 			})
 			}, __("Send Test Message"));
     }
