@@ -8,12 +8,13 @@ import frappe
 from frappe.model.document import Document
 class whatsappmessage(Document):  
  @frappe.whitelist()
- def msg(self,token, recipient,message,url):
+ def msg(self,token, recipient,message_url,url):
     url=url
+    message_url=message_url
     payload = {
         'token': token,
         'to': recipient,
-        'body': message,
+        'body':None,
     }
     
     headers = {'content-type': 'application/x-www-form-urlencoded'}

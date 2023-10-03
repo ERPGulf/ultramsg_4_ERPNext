@@ -14,13 +14,13 @@ frappe.ui.form.on("whatsapp message", {
         frm.call("msg", {
 			token: frm.doc.token,
 			recipient :frm.doc.to,
-			message:frm.doc.message,
-             url:frm.doc.url
+			message_url:frm.doc.message_url,
+            url:frm.doc.url
 				}).then(r => {
-				console.log(r.message)
-				frappe.msgprint(r.message); 	
+			
+				frappe.msgprint("success" ); 	
 			})
-			}, __("send"));
+			}, __("Send Test Message"));
     }
 });
   

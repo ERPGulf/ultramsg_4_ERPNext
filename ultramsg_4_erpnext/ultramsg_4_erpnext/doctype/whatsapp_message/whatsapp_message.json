@@ -7,22 +7,17 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "message",
   "url",
+  "message_url",
   "token",
   "from",
   "to"
  ],
  "fields": [
   {
-   "fieldname": "message",
-   "fieldtype": "Data",
-   "label": "message"
-  },
-  {
    "fieldname": "url",
    "fieldtype": "Data",
-   "label": "url"
+   "label": "document url"
   },
   {
    "fieldname": "token",
@@ -39,12 +34,17 @@
    "fieldtype": "Phone",
    "label": "to",
    "options": "phone"
+  },
+  {
+   "fieldname": "message_url",
+   "fieldtype": "Data",
+   "label": "message url"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-09-19 15:42:17.846852",
+ "modified": "2023-10-03 11:06:50.918993",
  "modified_by": "Administrator",
  "module": "Ultramsg 4 Erpnext",
  "name": "whatsapp message",
