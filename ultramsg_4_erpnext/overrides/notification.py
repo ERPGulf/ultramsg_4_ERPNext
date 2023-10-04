@@ -9,6 +9,7 @@ import base64
 # to send whatsapp message and document using ultramsg
 class ERPGulfNotification(Notification):
  def send(self, doc):
+     
       context = get_context(doc)
       context = {"doc":doc, "alert": self, "comments": None}
       if doc.get("_comments"):
@@ -18,15 +19,13 @@ class ERPGulfNotification(Notification):
       try:
             if self.channel == "whatsapp message":
                 token = frappe.get_doc('whatsapp message').get('token') 
-                docname=self.print_format
-                file = frappe.get_print("Print Format", docname, as_pdf=True) 
+                file = frappe.get_print(doc.doctype, doc.name, self.print_format, as_pdf=True) 
                 pdf_bytes = io.BytesIO(file)
                 pdf_base64 = base64.b64encode(pdf_bytes.getvalue()).decode()
                 in_memory_url = f"data:application/pdf;base64,{pdf_base64}"
                 document_url= frappe.get_doc('whatsapp message').get('url') 
                 message_url =  frappe.get_doc('whatsapp message').get('message_url') 
-                msg=self.message
-                self.send_ultra_whatsapp_msg(token,in_memory_url,msg,document_url,message_url,docname,context,doc)
+                self.send_ultra_whatsapp_msg(token,in_memory_url,self.message,document_url,message_url,doc.name,context,doc)
       except:
             frappe.log_error(title='Failed to send notification', message=frappe.get_traceback())  
       super(ERPGulfNotification, self).send(doc)
