@@ -51,7 +51,6 @@ class ERPGulfNotification(Notification):
     # receiverNumbers = []
     for receipt in recipients:
         number = receipt
-  
     payload = {
         'token': token,
         'to':number,
