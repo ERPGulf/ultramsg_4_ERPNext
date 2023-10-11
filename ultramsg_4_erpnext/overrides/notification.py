@@ -6,6 +6,7 @@ import requests
 import json
 import io
 import base64
+from frappe.utils import now
 # to send whatsapp message and document using ultramsg
 class ERPGulfNotification(Notification):
  #to create pdf
@@ -37,10 +38,14 @@ class ERPGulfNotification(Notification):
  
       try:
           response = requests.post(document_url, data=payload, headers=headers)
-          
+      # when the msg send is success then its details are stored into ultramsg_4_ERPNext log  
+          current_time =now()# for geting current time
+          msg1 = frappe.render_template(self.message, context)
+          frappe.get_doc({"doctype":"ultramsg_4_ERPNext log","title":"WhatsApp Message Successfully Sent ","message":msg1,"to_number":doc.custom_mobile_phone,"time":current_time }).insert()
           return response.text
       except Exception as e:
           return e
+      
       
   #send message without pdf
   def send_whatsapp_without_pdf(self,doc,context):
@@ -61,6 +66,10 @@ class ERPGulfNotification(Notification):
 
     try:
         response = requests.post(message_url, data=payload, headers=headers)
+      # when the msg send is success then its details are stored into ultramsg_4_ERPNext log  
+        current_time =now()# for geting current time
+        msg1 = frappe.render_template(self.message, context)
+        frappe.get_doc({"doctype":"ultramsg_4_ERPNext log","title":"WhatsApp Message Successfully Sent ","message":msg1,"to_number":doc.custom_mobile_phone,"time":current_time }).insert()
         return response.text
     except Exception as e:
         return e
@@ -79,10 +88,9 @@ class ERPGulfNotification(Notification):
               # if attach_print and print format both are working then it send pdf with message
                 if self.attach_print and self.print_format:
                     i= self.send_whatsapp_with_pdf(doc,context)
-               # otherwise only message will send     
+               # otherwise send only message   
                 else:
                     i=self.send_whatsapp_without_pdf(doc,context)
-        
       except:
             frappe.log_error(title='Failed to send notification', message=frappe.get_traceback())  
       super(ERPGulfNotification, self).send(doc)
