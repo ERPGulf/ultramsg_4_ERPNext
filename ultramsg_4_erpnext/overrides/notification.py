@@ -7,6 +7,8 @@ import json
 import io
 import base64
 from frappe.utils import now
+import time
+from frappe import enqueue
 # to send whatsapp message and document using ultramsg
 class ERPGulfNotification(Notification):
  #to create pdf
@@ -19,11 +21,11 @@ class ERPGulfNotification(Notification):
      
  # fetch pdf from the create_pdf function and send to whatsapp     
   def send_whatsapp_with_pdf(self,doc,context):
+      frappe.publish_realtime('msgprint', 'enter in to whtsapp with pdf..')
       memory_url = self.create_pdf(doc)
       token = frappe.get_doc('whatsapp message').get('token') 
       msg1 = frappe.render_template(self.message, context)
       recipients = self.get_receiver_list(doc,context)
-    #   receiverNumbers = []
       for receipt in recipients:
         number = receipt
       document_url= frappe.get_doc('whatsapp message').get('url')
@@ -42,10 +44,19 @@ class ERPGulfNotification(Notification):
           current_time =now()# for geting current time
           msg1 = frappe.render_template(self.message, context)
           frappe.get_doc({"doctype":"ultramsg_4_ERPNext log","title":"WhatsApp Message Successfully Sent ","message":msg1,"to_number":doc.custom_mobile_phone,"time":current_time }).insert()
+         
+          frappe.publish_realtime('msgprint', 'Starting send_whatsapp_with_pdf..')
+          
+          frappe.publish_realtime('msgprint', 'Starting long job...')
+          time.sleep(5)
+          frappe.publish_realtime('msgprint', 'after 5 sconds ')
+          time.sleep(5)
+          frappe.publish_realtime('msgprint', 'after 10 sconds ')
+          
           return response.text
       except Exception as e:
           return e
-      
+ 
       
   #send message without pdf
   def send_whatsapp_without_pdf(self,doc,context):
@@ -53,7 +64,6 @@ class ERPGulfNotification(Notification):
     message_url =  frappe.get_doc('whatsapp message').get('message_url')
     msg1 = frappe.render_template(self.message, context)
     recipients = self.get_receiver_list(doc,context)
-    # receiverNumbers = []
     for receipt in recipients:
         number = receipt
     payload = {
@@ -73,8 +83,10 @@ class ERPGulfNotification(Notification):
         return response.text
     except Exception as e:
         return e
-  
-    
+ 
+   
+
+# directly pass the function 
   # call the  send whatsapp with pdf function and send whatsapp without pdf function and it work with the help of condition 
   def send(self, doc):
       context = {"doc":doc, "alert": self, "comments": None}
@@ -87,14 +99,26 @@ class ERPGulfNotification(Notification):
             if self.channel == "whatsapp message":
               # if attach_print and print format both are working then it send pdf with message
                 if self.attach_print and self.print_format:
+                 
+        
+                    # frappe.publish_realtime('msgprint', 'Start here')
+                    
+                    # time.sleep(5)
+                    # frappe.enqueue('send_whatsapp_with_pdf', queue="short", args=(doc,context))
+                     
+                    
+                 
                     i= self.send_whatsapp_with_pdf(doc,context)
                # otherwise send only message   
                 else:
                     i=self.send_whatsapp_without_pdf(doc,context)
+     
       except:
             frappe.log_error(title='Failed to send notification', message=frappe.get_traceback())  
       super(ERPGulfNotification, self).send(doc)
-                       
+      
+
+                    
                        
   def get_receiver_list(self, doc, context):
     """return receiver list based on the doc field and role specified"""
