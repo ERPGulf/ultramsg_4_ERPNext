@@ -39,7 +39,7 @@ class ERPGulfNotification(Notification):
         }
     headers = {'content-type': 'application/x-www-form-urlencoded'} 
     try:
-      time.sleep(1)
+      time.sleep(10)
       response = requests.post(document_url, data=payload, headers=headers)
       if response.status_code == 200:
           response_json = response.json()
@@ -78,7 +78,7 @@ class ERPGulfNotification(Notification):
        }
     headers = {'content-type': 'application/x-www-form-urlencoded'}
     try:
-        time.sleep(1)
+        time.sleep(10)
         response = requests.post(message_url, data=payload, headers=headers)
       # when the msg send is success then its details are stored into ultramsg_4_ERPNext log  
         if response.status_code == 200:
@@ -117,7 +117,7 @@ class ERPGulfNotification(Notification):
           frappe.enqueue(
             self.send_whatsapp_with_pdf,
             queue="short",
-            timeout=3,
+            timeout=200,
             doc=doc,
             context=context
             ) 
@@ -127,7 +127,7 @@ class ERPGulfNotification(Notification):
           frappe.enqueue(
           self.send_whatsapp_without_pdf,
           queue="short",
-          timeout=3,
+          timeout=200,
           doc=doc,
           context=context
          ) 
