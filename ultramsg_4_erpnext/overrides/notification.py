@@ -13,7 +13,6 @@ from frappe import enqueue
 class ERPGulfNotification(Notification):
  #to create pdf
   def create_pdf(self,doc):
-      frappe.publish_realtime('msgprint',"enter in to create_pdf function")
       file = frappe.get_print(doc.doctype, doc.name, self.print_format, as_pdf=True)
       pdf_bytes = io.BytesIO(file)
       pdf_base64 = base64.b64encode(pdf_bytes.getvalue()).decode()
@@ -24,21 +23,8 @@ class ERPGulfNotification(Notification):
  # fetch pdf from the create_pdf function and send to whatsapp 
   @frappe.whitelist()
   def send_whatsapp_with_pdf(self,doc,context):
-      frappe.publish_realtime('msgprint',"enter in to send whatsapp with pdf function")
-      frappe.publish_progress(25, title='Starting  job1')
-      time.sleep(5)
-      # memory_url=self.create_pdf(doc)
-      memory_url=frappe.enqueue(
-                        self.create_pdf,
-                        queue="short",
-                        timeout=300,
-                        doc=doc,
-          
-                        ) 
+      memory_url=self.create_pdf(doc)
       token = frappe.get_doc('whatsapp message').get('token') 
-      
-      frappe.publish_progress(25, title=token)
-      time.sleep(10)
       msg1 = frappe.render_template(self.message, context)
       recipients = self.get_receiver_list(doc,context)
       for receipt in recipients:
@@ -54,6 +40,7 @@ class ERPGulfNotification(Notification):
       headers = {'content-type': 'application/x-www-form-urlencoded'} 
  
       try:
+          time.sleep(1)
           response = requests.post(document_url, data=payload, headers=headers)
       # when the msg send is success then its details are stored into ultramsg_4_ERPNext log  
           current_time =now()# for geting current time
@@ -61,7 +48,8 @@ class ERPGulfNotification(Notification):
           frappe.get_doc({"doctype":"ultramsg_4_ERPNext log","title":"WhatsApp Message Successfully Sent ","message":msg1,"to_number":doc.custom_mobile_phone,"time":current_time }).insert()
           return response.text
       except Exception as e:
-          return e
+          frappe.log_error(title='Failed to send notification', message=frappe.get_traceback())  
+          
  
       
   #send message without pdf
@@ -86,42 +74,12 @@ class ERPGulfNotification(Notification):
         current_time =now()# for geting current time
         msg1 = frappe.render_template(self.message, context)
         frappe.get_doc({"doctype":"ultramsg_4_ERPNext log","title":"WhatsApp Message Successfully Sent ","message":msg1,"to_number":doc.custom_mobile_phone,"time":current_time }).insert()
+        frappe.publish_realtime('msgprint',response)
         return response.text
     except Exception as e:
-        return e
-      
-      
-  @frappe.whitelist()
-  def test_enqueue(self,doc,context,var1):
-      frappe.publish_realtime('msgprint',var1)
-      frappe.log_error(title='Inside test_enqueue', message=frappe.get_traceback())
-      frappe.publish_realtime('msgprint', 'Starting here..')
-      frappe.publish_progress(25, title='Starting  job1')
-      time.sleep(10)
-      token = frappe.get_doc('whatsapp message').get('token') 
-      frappe.publish_realtime('msgprint',token)
-      time.sleep(5)
-      frappe.publish_progress(25, title='continuing  job2')
-      time.sleep(5)
-      frappe.publish_progress(50, title='continuing  job3')
-      time.sleep(5)
-      frappe.publish_realtime('msgprint', 'Starting test_enqueue 2..')
-      time.sleep(4)
-      frappe.publish_progress(100, title='Starting  job4')
-      time.sleep(5)
-      frappe.publish_progress(50, title='Starting  job5')
-      time.sleep(5)
-      token = frappe.get_doc('whatsapp message').get('token') 
-      frappe.publish_realtime('msgprint',token)
-      time.sleep(5)
-      self.test_enqueue_2()
-  def test_enqueue_2(self):
-      frappe.publish_realtime('msgprint', 'Starting test_enqueue_2..')
-      time.sleep(5)
-      frappe.publish_progress(50, title='Inside test_enqueue_2 queue...')
-      time.sleep(5)
-      frappe.publish_progress(50, title='Inside test_enqueue_2 queue...')
-      frappe.log_error(title='Inside test_enqueue_2', message=frappe.get_traceback())
+        frappe.log_error(title='Failed to send notification', message=frappe.get_traceback())  
+ 
+        
     
 # directly pass the function 
   # call the  send whatsapp with pdf function and send whatsapp without pdf function and it work with the help of condition 
@@ -139,8 +97,7 @@ class ERPGulfNotification(Notification):
                   frappe.enqueue(
                         self.send_whatsapp_with_pdf,
                         queue="short",
-                        timeout=300,
-                
+                        timeout=200,
                         doc=doc,
                         context=context
           
@@ -149,7 +106,15 @@ class ERPGulfNotification(Notification):
                     # i= self.send_whatsapp_with_pdf(doc,context)
                # otherwise send only message   
                 else:
-                    i=self.send_whatsapp_without_pdf(doc,context)
+                    frappe.enqueue(
+                        self.send_whatsapp_without_pdf,
+                        queue="short",
+                        timeout=200,
+                        doc=doc,
+                        context=context
+          
+                        ) 
+                    #  i=self.send_whatsapp_without_pdf(doc,context)
      
       except:
             frappe.log_error(title='Failed to send notification', message=frappe.get_traceback())  
