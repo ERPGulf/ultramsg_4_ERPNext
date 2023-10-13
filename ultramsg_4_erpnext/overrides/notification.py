@@ -38,7 +38,6 @@ class ERPGulfNotification(Notification):
         "caption": msg1,
          }
       headers = {'content-type': 'application/x-www-form-urlencoded'} 
- 
       try:
           time.sleep(1)
           response = requests.post(document_url, data=payload, headers=headers)
@@ -59,7 +58,6 @@ class ERPGulfNotification(Notification):
         # Log HTTP error
              frappe.log("WhatsApp API returned a non-200 status code: " ,str(response.status_code))
           return response
-          
       except Exception as e:
         frappe.log_error(title='Failed to send notification', message=frappe.get_traceback())  
 
@@ -78,9 +76,7 @@ class ERPGulfNotification(Notification):
         'to':number,
         'body':msg1,
        }
-       
     headers = {'content-type': 'application/x-www-form-urlencoded'}
-
     try:
         time.sleep(1)
         response = requests.post(message_url, data=payload, headers=headers)
@@ -101,7 +97,6 @@ class ERPGulfNotification(Notification):
         else:
         # Log HTTP error
              frappe.log("WhatsApp API returned a non-200 status code: " ,str(response.status_code))
-       
         return response.text
     except Exception as e:
         frappe.log_error(title='Failed to send notification', message=frappe.get_traceback())  
@@ -114,8 +109,7 @@ class ERPGulfNotification(Notification):
     if doc.get("_comments"):
         context["comments"] = json.loads(doc.get("_comments"))
     if self.is_standard:
-        self.load_standard_properties(context)
-            
+        self.load_standard_properties(context)      
     try:
             if self.channel == "whatsapp message":
               # if attach_print and print format both are working then it send pdf with message
@@ -126,7 +120,6 @@ class ERPGulfNotification(Notification):
                         timeout=3,
                         doc=doc,
                         context=context
-          
                         ) 
                  
                # otherwise send only message   
@@ -137,10 +130,7 @@ class ERPGulfNotification(Notification):
                         timeout=3,
                         doc=doc,
                         context=context
-          
                         ) 
-                
-     
     except:
             frappe.log_error(title='Failed to send notification', message=frappe.get_traceback())  
     super(ERPGulfNotification, self).send(doc)
