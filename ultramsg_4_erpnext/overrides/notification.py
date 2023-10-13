@@ -13,52 +13,52 @@ from frappe import enqueue
 class ERPGulfNotification(Notification):
  #to create pdf
   def create_pdf(self,doc):
-      file = frappe.get_print(doc.doctype, doc.name, self.print_format, as_pdf=True)
-      pdf_bytes = io.BytesIO(file)
-      pdf_base64 = base64.b64encode(pdf_bytes.getvalue()).decode()
-      in_memory_url = f"data:application/pdf;base64,{pdf_base64}"
-      return in_memory_url
+    file = frappe.get_print(doc.doctype, doc.name, self.print_format, as_pdf=True)
+    pdf_bytes = io.BytesIO(file)
+    pdf_base64 = base64.b64encode(pdf_bytes.getvalue()).decode()
+    in_memory_url = f"data:application/pdf;base64,{pdf_base64}"
+    return in_memory_url
   
      
  # fetch pdf from the create_pdf function and send to whatsapp 
   @frappe.whitelist()
   def send_whatsapp_with_pdf(self,doc,context):
-      memory_url=self.create_pdf(doc)
-      token = frappe.get_doc('whatsapp message').get('token') 
-      msg1 = frappe.render_template(self.message, context)
-      recipients = self.get_receiver_list(doc,context)
-      for receipt in recipients:
-        number = receipt
-      document_url= frappe.get_doc('whatsapp message').get('url')
-      payload = {
-        'token': token,
-        'to':number,
-        "filename": doc.name,
-        "document": memory_url,
-        "caption": msg1,
-         }
-      headers = {'content-type': 'application/x-www-form-urlencoded'} 
-      try:
-          time.sleep(1)
-          response = requests.post(document_url, data=payload, headers=headers)
-          if response.status_code == 200:
-            response_json = response.json()
-            if "sent" in  response_json and  response_json["sent"] == "true":
+    memory_url=self.create_pdf(doc)
+    token = frappe.get_doc('whatsapp message').get('token') 
+    msg1 = frappe.render_template(self.message, context)
+    recipients = self.get_receiver_list(doc,context)
+    for receipt in recipients:
+      number = receipt
+    document_url= frappe.get_doc('whatsapp message').get('url')
+    payload = {
+      'token': token,
+      'to':number,
+      "filename": doc.name,
+      "document": memory_url,
+      "caption": msg1,
+        }
+    headers = {'content-type': 'application/x-www-form-urlencoded'} 
+    try:
+      time.sleep(1)
+      response = requests.post(document_url, data=payload, headers=headers)
+      if response.status_code == 200:
+          response_json = response.json()
+          if "sent" in  response_json and  response_json["sent"] == "true":
             # Log success
-              current_time =now()# for geting current time
-              msg1 = frappe.render_template(self.message, context)
-              frappe.get_doc({"doctype":"ultramsg_4_ERPNext log","title":"WhatsApp Message Successfully Sent ","message":msg1,"to_number":doc.custom_mobile_phone,"time":current_time }).insert()
-            elif "error" in  response_json:
+            current_time =now()# for geting current time
+            msg1 = frappe.render_template(self.message, context)
+            frappe.get_doc({"doctype":"ultramsg_4_ERPNext log","title":"WhatsApp Message Successfully Sent ","message":msg1,"to_number":doc.custom_mobile_phone,"time":current_time }).insert()
+          elif "error" in  response_json:
             # Log error
-              frappe.log("WhatsApp API Error: " ,  response_json.get("error"))
-            else:
-            # Log unexpected response
-              frappe.log("Unexpected response from WhatsApp API")
+            frappe.log("WhatsApp API Error: " ,  response_json.get("error"))
           else:
+            # Log unexpected response
+            frappe.log("Unexpected response from WhatsApp API")
+      else:
         # Log HTTP error
-             frappe.log("WhatsApp API returned a non-200 status code: " ,str(response.status_code))
-          return response
-      except Exception as e:
+        frappe.log("WhatsApp API returned a non-200 status code: " ,str(response.status_code))
+        return response
+    except Exception as e:
         frappe.log_error(title='Failed to send notification', message=frappe.get_traceback())  
 
  
@@ -111,26 +111,26 @@ class ERPGulfNotification(Notification):
     if self.is_standard:
         self.load_standard_properties(context)      
     try:
-            if self.channel == "whatsapp message":
-              # if attach_print and print format both are working then it send pdf with message
-                if self.attach_print and self.print_format:
-                  frappe.enqueue(
-                        self.send_whatsapp_with_pdf,
-                        queue="short",
-                        timeout=3,
-                        doc=doc,
-                        context=context
-                        ) 
+      if self.channel == "whatsapp message":
+        # if attach_print and print format both are working then it send pdf with message
+        if self.attach_print and self.print_format:
+          frappe.enqueue(
+            self.send_whatsapp_with_pdf,
+            queue="short",
+            timeout=3,
+            doc=doc,
+            context=context
+            ) 
                  
                # otherwise send only message   
-                else:
-                    frappe.enqueue(
-                        self.send_whatsapp_without_pdf,
-                        queue="short",
-                        timeout=3,
-                        doc=doc,
-                        context=context
-                        ) 
+        else:
+          frappe.enqueue(
+          self.send_whatsapp_without_pdf,
+          queue="short",
+          timeout=3,
+          doc=doc,
+          context=context
+         ) 
     except:
             frappe.log_error(title='Failed to send notification', message=frappe.get_traceback())  
     super(ERPGulfNotification, self).send(doc)
