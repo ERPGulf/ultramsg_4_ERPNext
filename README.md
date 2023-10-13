@@ -10,16 +10,14 @@ This app integrates ERPNext with ultramsg_4_ERPNext ,  Global   Whatsapp provide
 
 The installation document is published here ( https://cloud.erpgulf.com/blog/news/released-whatsapp-integration-app-for-erpnext-frappe ) If you required any further clarification or update, please let us know on support@ERPGulf.com
 
-We have added following features in Version-2.0
+We have added following features in Version-2.0.
 
-1- Added print PDF and document sending from notification to WhatsAPP
+1- Added print PDF and document sending from notification to WhatsAPP.
+2- Moved all time taking processes to background job, so users will not feels slowness or delay.
+3- Added features for error and success logs. Errors are available now on error log and success messages are available on ultramsg_4_ERPNext log.
 
-2- Moved all time taking processes to background job, so users will not feels slowness or delay
+If you find any issue using this app, please raise it on Github issue page or send email to support@erpgulf.com.
 
-3- Added features for error and success logs. Errors are available now on error log and success messages are available on ultramsg_4_ERPNext log
-
-If you find any issue using this app, please raise it on Github issue page or send email to support@erpgulf.com
-
-Thanks
+Thanks.
 
 Aysha Sithara.
