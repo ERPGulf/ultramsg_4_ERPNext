@@ -114,6 +114,8 @@ app_license = "MIT"
 # override_doctype_class = {
 #	"ToDo": "custom_app.overrides.CustomToDo"
 # },
+from frappe import _
+from . import __version__ as app_version
 
 fixtures=[{ "dt":"Property Setter" ,"filters":[[
                 "name", "in",[
