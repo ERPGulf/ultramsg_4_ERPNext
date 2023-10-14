@@ -47,7 +47,7 @@ class ERPGulfNotification(Notification):
             # Log success
             current_time =now()# for geting current time
             msg1 = frappe.render_template(self.message, context)
-            frappe.get_doc({"doctype":"ultramsg_4_ERPNext log","title":"WhatsApp Message Successfully Sent ","message":msg1,"to_number":doc.custom_mobile_phone,"time":current_time }).insert()
+            frappe.get_doc({"doctype":"ultramsg_4_ERPNext log","title":"Whatsapp message and pdf successfully sent ","message":msg1,"to_number":doc.custom_mobile_phone,"time":current_time }).insert()
           elif "error" in  response_json:
             # Log error
             frappe.log("WhatsApp API Error: " ,  response_json.get("error"))
@@ -87,7 +87,7 @@ class ERPGulfNotification(Notification):
             # Log success
               current_time =now()# for geting current time
               msg1 = frappe.render_template(self.message, context)
-              frappe.get_doc({"doctype":"ultramsg_4_ERPNext log","title":"WhatsApp Message Successfully Sent ","message":msg1,"to_number":doc.custom_mobile_phone,"time":current_time }).insert()
+              frappe.get_doc({"doctype":"ultramsg_4_ERPNext log","title":"Whatsapp message successfully sent ","message":msg1,"to_number":doc.custom_mobile_phone,"time":current_time }).insert()
             elif "error" in  response_json:
             # Log error
               frappe.log("WhatsApp API Error: " ,  response_json.get("error"))
