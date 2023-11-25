@@ -24,15 +24,18 @@ class ERPGulfNotification(Notification):
   @frappe.whitelist()
   def send_whatsapp_with_pdf(self,doc,context):
     memory_url=self.create_pdf(doc)
-    token = frappe.get_doc('whatsapp message').get('token') 
+    token = frappe.get_doc('whatsapp message').get('token')
     msg1 = frappe.render_template(self.message, context)
     recipients = self.get_receiver_list(doc,context)
+    multiple_numbers=[] 
     for receipt in recipients:
       number = receipt
+      multiple_numbers.append(number)
+    add_multiple_numbers_to_url=','.join(multiple_numbers) 
     document_url= frappe.get_doc('whatsapp message').get('url')
     payload = {
       'token': token,
-      'to':number,
+      'to':add_multiple_numbers_to_url,
       "filename": doc.name,
       "document": memory_url,
       "caption": msg1,
@@ -65,7 +68,7 @@ class ERPGulfNotification(Notification):
       
   #send message without pdf
   def send_whatsapp_without_pdf(self,doc,context):
-    token = frappe.get_doc('whatsapp message').get('token') 
+    token = frappe.get_doc('whatsapp message').get('token')
     message_url =  frappe.get_doc('whatsapp message').get('message_url')
     msg1 = frappe.render_template(self.message, context)
     recipients = self.get_receiver_list(doc,context)
@@ -105,6 +108,7 @@ class ERPGulfNotification(Notification):
 # directly pass the function 
   # call the  send whatsapp with pdf function and send whatsapp without pdf function and it work with the help of condition 
   def send(self, doc):
+
     context = {"doc":doc, "alert": self, "comments": None}
     if doc.get("_comments"):
         context["comments"] = json.loads(doc.get("_comments"))
@@ -113,24 +117,23 @@ class ERPGulfNotification(Notification):
     try:
       if self.channel == "whatsapp message":
         # if attach_print and print format both are working then it send pdf with message
-        if self.attach_print and self.print_format:
+        if self.attach_print or  self.print_format:
           frappe.enqueue(
-            self.send_whatsapp_with_pdf,
+            self.send_whatsapp_with_pdf(doc, context),
             queue="short",
             timeout=200,
             doc=doc,
             context=context
-            ) 
-                 
+            )
                # otherwise send only message   
         else:
           frappe.enqueue(
-          self.send_whatsapp_without_pdf,
+          self.send_whatsapp_without_pdf(doc, context),
           queue="short",
           timeout=200,
           doc=doc,
           context=context
-         ) 
+         )
     except:
             frappe.log_error(title='Failed to send notification', message=frappe.get_traceback())  
     super(ERPGulfNotification, self).send(doc)
@@ -146,13 +149,17 @@ class ERPGulfNotification(Notification):
 			# For sending messages to the owner's mobile phone number
             if recipient.receiver_by_document_field == "owner":
                     receiver_list += get_user_info([dict(user_name=doc.get("owner"))], "mobile_no")
+                    
 			# For sending messages to the number specified in the receiver field
             elif recipient.receiver_by_document_field:
                     receiver_list.append(doc.get(recipient.receiver_by_document_field))
 			# For sending messages to specified role
             if recipient.receiver_by_role:
                 receiver_list += get_info_based_on_role(recipient.receiver_by_role, "mobile_no")
-            return receiver_list
+            # return receiver_list
+    receiver_list = list(set(receiver_list))
+    return receiver_list
+
   
     
     
