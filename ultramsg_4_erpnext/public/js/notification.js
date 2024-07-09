@@ -73,7 +73,15 @@ frappe.notification = {
 				});
 			} else if (in_list(["WhatsApp", "SMS", "whatsapp message"], frm.doc.channel)) {
 				receiver_fields = $.map(fields, function (d) {
-					return d.options == "Phone" ? get_select_options(d) : null;
+					if (d.fieldtype == 'Table') {
+						let child_fields = frappe.get_doc("DocType", d.options).fields;
+						return $.map(child_fields, function (df) {
+							return df.options == "Phone" ? get_select_options(df, d.fieldname) : null;
+						})
+					}
+					else {
+						return d.options == "Phone" ? get_select_options(d) : null;
+					}
 				});
 			}
 
