@@ -32,10 +32,8 @@ class ERPGulfNotification(Notification):
     for receipt in recipients:
       number = receipt
       multiple_numbers.append(number)
-      print(f'\n\n\n\n\n\n\n\nMulti Number List Under loop {multiple_numbers}\n\n\n\n\n\n\n\n')
     add_multiple_numbers_to_url=','.join(multiple_numbers)
     document_url= frappe.get_doc('whatsapp message').get('url')
-    print(f'\n\n\n\n\n\n\n\n Final Multi Number List {add_multiple_numbers_to_url}\n\n\n\n\n\n\n\n')
     payload = {
       'token': token,
       'to':add_multiple_numbers_to_url,
@@ -79,9 +77,7 @@ class ERPGulfNotification(Notification):
     for receipt in recipients:
       number = receipt
       multiple_numbers.append(number)
-      print(f'\n\n\n\n\n\n\n\nMulti Number List Under loop {multiple_numbers}\n\n\n\n\n\n\n\n')
     add_multiple_numbers_to_url=','.join(multiple_numbers)
-    print(f'\n\n\n\n\n\n\n\n Final Multi Number List {add_multiple_numbers_to_url}\n\n\n\n\n\n\n\n')
     payload = {
         'token': token,
         'to':add_multiple_numbers_to_url,
@@ -91,7 +87,6 @@ class ERPGulfNotification(Notification):
     try:
         time.sleep(10)
         response = requests.post(message_url, data=payload, headers=headers)
-        print(f'\n\n\n\n\n\n\n\nResponse {message_url,payload}\n\n\n\n\n\n\n\n')
       # when the msg send is success then its details are stored into ultramsg_4_ERPNext log  
         if response.status_code == 200:
             response_json = response.json()
@@ -151,9 +146,7 @@ class ERPGulfNotification(Notification):
   def get_receiver_list(self, doc, context):
     """return receiver list based on the doc field and role specified"""
     receiver_list = []
-    # print(f'\n\n\n\n\n\n\n\nrecipients is {self.recipients}\n\n\n\n\n\n\n\n')
     for recipient in self.recipients:
-            print(f'\n\n\n\n\n\n\n\nRecevier List:: Receipeient {recipient} & list is {receiver_list}\n\n\n\n\n\n\n\n')
             if recipient.condition:
                 if not frappe.safe_eval(recipient.condition, None, context):
                     continue
@@ -162,9 +155,7 @@ class ERPGulfNotification(Notification):
               if len(fields)>1:
                 for d in doc.get(fields[1]):
                   phone_number = d.get(fields[0])
-                  print(f'\n\n\n\n\n\n\n\nPhone Number {phone_number}\n\n\n\n\n\n\n\n')
                   receiver_list.append(phone_number)
-                  print(f'\n\n\n\n\n\n\n\nRecevier List Newwwwwww {receiver_list}\n\n\n\n\n\n\n\n')
               
 			# For sending messages to the owner's mobile phone number
             if recipient.receiver_by_document_field == "owner":
@@ -172,15 +163,14 @@ class ERPGulfNotification(Notification):
                     
 			# For sending messages to the number specified in the receiver field
             elif recipient.receiver_by_document_field:
-                    # print(f'\n\n\n\n\n\n\n\nrecipient.receiver_by_document_field :::::: {recipient}\n\n\n\n\n\n\n\n')
                     receiver_list.append(doc.get(recipient.receiver_by_document_field))
 			# For sending messages to specified role
             if recipient.receiver_by_role:
                 receiver_list += get_info_based_on_role(recipient.receiver_by_role, "mobile_no")
             # return receiver_list
     receiver_list = list(set(receiver_list))
+    # removing none_object from the list
     final_receiver_list = [item for item in receiver_list if item is not None]
-    print(f'\n\n\n\n\n\n\n\nfinal_receiver_list  {final_receiver_list}\n\n\n\n\n\n\n\n')
     return final_receiver_list
 
   
